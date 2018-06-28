@@ -1,0 +1,10 @@
+#ifndef MESSAGEDEFINE_H
+#define MESSAGEDEFINE_H
+
+
+#define REQUEST_BUYERINFO 20000
+
+#define REQUEST_SEARCH	  20002
+
+
+#endif
