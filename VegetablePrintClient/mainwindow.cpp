@@ -66,16 +66,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // 这里向服务端请求vegetable信息
-    char *vegeInfo = sockClient.RecvFromServer();
+    //char *vegeInfo = sockClient.RecvFromServer();
 
-    DataManager::getInstance()->saveVegeInfos(vegeInfo);
+    //DataManager::getInstance()->saveVegeInfos(vegeInfo);
 
     // 向服务端请求 买家信息
     char tmpBuf[60] = "";
     itoa(REQUEST_BUYERINFO, tmpBuf, 10);
-    sockClient.SendToServer((void *)tmpBuf);
-    char *buyerInfo = sockClient.RecvFromServer();
-    DataManager::getInstance()->saveBuyerInfos(buyerInfo);
+    sockClient.PushToSendQueue(tmpBuf);
+    //char *buyerInfo = sockClient.RecvFromServer();
+    //DataManager::getInstance()->saveBuyerInfos(buyerInfo);
 
     /*
     char x[] = "hello!\n";

@@ -14,7 +14,7 @@ public:
 
 	void Initialize();
 
-	void Send(SOCKET clientSock, string &msg);
+	void Send(SOCKET clientSock, int msgID, string &msg);
 
 	void SendToClientForVegeInfo(SOCKET clientSock);
 

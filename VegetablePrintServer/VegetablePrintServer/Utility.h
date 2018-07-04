@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <cstring>
 
 using namespace std;
 // split the char *

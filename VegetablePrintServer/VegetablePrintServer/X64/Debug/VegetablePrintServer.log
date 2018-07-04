@@ -1,21 +1,20 @@
-﻿生成启动时间为 2018/6/28 11:16:49。
-     1>项目“E:\CDemo\VegetablePrintServer\VegetablePrintServer\VegetablePrintServer.vcxproj”在节点 2 上(Build 个目标)。
+﻿生成启动时间为 2018/7/4 16:01:24。
+     1>项目“E:\GitHubProjects\vegetableprintsystem\VegetablePrintServer\VegetablePrintServer\VegetablePrintServer.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"D:\mysql-8.0.11-winx64\include" /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"X64\Debug\\" /Fd"X64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt MainServer.cpp
          MainServer.cpp
      1>MainServer.cpp(40): warning C4018: “<”: 有符号/无符号不匹配
-     1>MainServer.cpp(97): warning C4267: “=”: 从“size_t”转换到“ULONG”，可能丢失数据
-     1>MainServer.cpp(99): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-     1>MainServer.cpp(101): warning C4267: “初始化”: 从“size_t”转换到“DWORD”，可能丢失数据
-     1>MainServer.cpp(163): warning C4101: “sock”: 未引用的局部变量
+     1>MainServer.cpp(103): warning C4267: “=”: 从“size_t”转换到“ULONG”，可能丢失数据
+     1>MainServer.cpp(105): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+     1>MainServer.cpp(107): warning C4267: “初始化”: 从“size_t”转换到“DWORD”，可能丢失数据
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\CDemo\VegetablePrintServer\X64\Debug\VegetablePrintServer.exe" /INCREMENTAL /NOLOGO /LIBPATH:"D:\mysql-8.0.11-winx64\lib" ws2_32.lib libmysql.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\CDemo\VegetablePrintServer\X64\Debug\VegetablePrintServer.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\CDemo\VegetablePrintServer\X64\Debug\VegetablePrintServer.lib" /MACHINE:X64 X64\Debug\main.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\GitHubProjects\vegetableprintsystem\VegetablePrintServer\X64\Debug\VegetablePrintServer.exe" /INCREMENTAL /NOLOGO /LIBPATH:"D:\mysql-8.0.11-winx64\lib" ws2_32.lib libmysql.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\GitHubProjects\vegetableprintsystem\VegetablePrintServer\X64\Debug\VegetablePrintServer.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\GitHubProjects\vegetableprintsystem\VegetablePrintServer\X64\Debug\VegetablePrintServer.lib" /MACHINE:X64 X64\Debug\main.obj
          X64\Debug\MainServer.obj
          X64\Debug\SQLClient.obj
          X64\Debug\Utility.obj
-         VegetablePrintServer.vcxproj -> E:\CDemo\VegetablePrintServer\X64\Debug\VegetablePrintServer.exe
-     1>已完成生成项目“E:\CDemo\VegetablePrintServer\VegetablePrintServer\VegetablePrintServer.vcxproj”(Build 个目标)的操作。
+         VegetablePrintServer.vcxproj -> E:\GitHubProjects\vegetableprintsystem\VegetablePrintServer\X64\Debug\VegetablePrintServer.exe
+     1>已完成生成项目“E:\GitHubProjects\vegetableprintsystem\VegetablePrintServer\VegetablePrintServer\VegetablePrintServer.vcxproj”(Build 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:01.56
+已用时间 00:00:00.97

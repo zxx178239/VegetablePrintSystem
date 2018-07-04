@@ -141,7 +141,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QTableView" name="tableView">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -241,7 +241,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -281,7 +281,7 @@
  <tabstops>
   <tabstop>prePrintBtn</tabstop>
   <tabstop>printBtn</tabstop>
-  <tabstop>tableWidget</tabstop>
+  <tabstop>tableView</tabstop>
  </tabstops>
  <resources/>
  <connections/>

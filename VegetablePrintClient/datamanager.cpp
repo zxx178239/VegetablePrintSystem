@@ -32,7 +32,7 @@ void DataManager::saveVegeInfos(char *vegeInfo)
 {
     QString curStr;
     curStr = QString::fromLocal8Bit(vegeInfo);
-    qDebug() << curStr.toStdString().c_str() << endl;
+    //qDebug() << curStr.toStdString().c_str() << endl;
     QStringList allVegeInfos = curStr.split('\n');
 
     for(int i = 0;  i < allVegeInfos.size(); ++ i)
@@ -45,7 +45,7 @@ void DataManager::saveVegeInfos(char *vegeInfo)
         newInfo.vegeName = string(curVegeInfo.at(0).toLocal8Bit());
         newInfo.vegePrice = curVegeInfo.at(1).toDouble();
 
-        cout <<  newInfo.vegeName << " " << newInfo.vegePrice << endl;
+        //cout <<  newInfo.vegeName << " " << newInfo.vegePrice << endl;
 
         m_vAllVegeInfos.push_back(newInfo);
     }

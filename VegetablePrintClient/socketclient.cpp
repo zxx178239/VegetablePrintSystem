@@ -14,7 +14,10 @@ SocketClient::SocketClient()
 
 SocketClient::~SocketClient()
 {
+    WaitForSingleObject(hSndThread, INFINITE);//等待线程结束
+    WaitForSingleObject(hRcvThread, INFINITE);
 
+    DeleteCriticalSection(&locker);
 }
 
 void SocketClient::Initialize()
@@ -25,6 +28,8 @@ void SocketClient::Initialize()
     //HANDLE hSndThread, hRcvThread;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
         ErrorHandling("WSAStartup() error!");
+
+    InitializeCriticalSection(&locker);
 
     hSock = socket(PF_INET, SOCK_STREAM, 0);
     memset(&servAdr, 0, sizeof(servAdr));
@@ -37,40 +42,37 @@ void SocketClient::Initialize()
 
     cout << "connect success!" << endl;
 
-    /*
-    hSndThread =
-        (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)&hSock, 0, NULL);//写线程
-    hRcvThread =
-        (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)&hSock, 0, NULL);//读线程
 
-    WaitForSingleObject(hSndThread, INFINITE);//等待线程结束
-    WaitForSingleObject(hRcvThread, INFINITE);
-    */
+    hSndThread =
+        (HANDLE)_beginthreadex(NULL, 0, SendMsg, this, 0, NULL);//写线程
+    hRcvThread =
+        (HANDLE)_beginthreadex(NULL, 0, RecvMsg, this, 0, NULL);//读线程
+
 }
 
-/*
+
 unsigned WINAPI SendMsg(void * arg)   // send thread main
 {
-    SOCKET sock = *((SOCKET*)arg);
-    char name_msg[NAME_SIZE + BUF_SIZE];
-    char padd[2];
-    fgets(padd, 2, stdin);//多余的'\n'
-    printf("\n send message:");
+    SocketClient *lpClient = (SocketClient *)arg;
+
+    SOCKET sock = lpClient->hSock;
+
     while (1)
     {
+        lpClient->Lock();
+
+        if(lpClient->sendQueue.empty())
         {
-            fgets(msg, BUF_SIZE, stdin);
-            if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n"))
-            {
-                closesocket(sock);
-                exit(0);
-            }
-            sprintf(name_msg, "[%s] %s", NAME, msg);
-            char numofmsg = strlen(name_msg) + '0';
-            char newmsg[100]; newmsg[0] = numofmsg; newmsg[1] = 0;//第一个字符表示消息的长度
-            strcat(newmsg, name_msg);
-            int result = send(sock, newmsg, strlen(newmsg), 0);
-            if (result == -1)return -1;//发送错误
+            lpClient->UnLock();
+            continue;
+        }
+        else
+        {
+            char *sendMsg = lpClient->sendQueue.front();
+            lpClient->sendQueue.pop();
+            lpClient->UnLock();
+            send(sock, sendMsg, strlen(sendMsg), 0);
+            cout << "send msg" << endl;
         }
     }
     return NULL;
@@ -78,76 +80,55 @@ unsigned WINAPI SendMsg(void * arg)   // send thread main
 
 unsigned WINAPI RecvMsg(void * arg)  // read thread main
 {
-    SOCKET sock = *((SOCKET*)arg);
-    char name_msg[NAME_SIZE + BUF_SIZE];
-    int str_len = 0;
+    SocketClient *lpClient = (SocketClient *)arg;
+
+    SOCKET sock = lpClient->hSock;
+    char buffer[BUF_SIZE] = "";
+
     while (1)
     {
-        {
-            char lyfstr[1000] = { 0 };
-            int totalnum = 0;
-            str_len = recv(sock, name_msg, 1, 0);//读取第一个字符！获取消息的长度
-            if (str_len == -1)//读取错误
-            {
-                printf("return -1\n");
-                return -1;
-            }
-            if (str_len == 0)//读取结束
-            {
-                printf("return 0\n");
-                return 0;//读取结束
-            }
-            totalnum = name_msg[0] - '0';
-            int count = 0;
-
-            do
-            {
-                str_len = recv(sock, name_msg, 1, 0);
-
-                name_msg[str_len] = 0;
-
-                if (str_len == -1)//读取错误
-                {
-                    printf("return -1\n");
-                    return -1;
-                }
-                if (str_len == 0)
-                {
-                    printf("return 0\n");
-                    return 0;//读取结束
-                }
-                strcat(lyfstr, name_msg);
-                count = str_len + count;
-
-            } while (count < totalnum);
-
-            lyfstr[count] = '\0';
-            printf("\n");
-            strcat(lyfstr, "\n");
-            fputs(lyfstr, stdout);
-            printf(" send message:");
-            fflush(stdout);
-            memset(name_msg, 0, sizeof(char));
-        }
+        memset(buffer, 0, BUF_SIZE);
+        recv(sock, buffer, BUF_SIZE, 0);
+        lpClient->OnRequest(buffer);
     }
     return NULL;
-}*/
+}
 
-
-void SocketClient::SendToServer(void *msg)
+void SocketClient::OnRequest(void *lpData)
 {
-    char *pMsg = (char *)msg;
+    vector<string> curMsg = split((char *)lpData, ' ');
 
-    send(hSock, pMsg, strlen(pMsg), 0);
+    if(curMsg.size() != 0)
+    {
+        int msgID = atoi(curMsg[0].c_str());
+        char *msg = substr((char *)lpData);
+        switch(msgID)
+        {
+            case NOTIFY_VEGETABLEINFO:
+                cout << "NOTIFY_VEGETABLEINFO" << endl;
+                DataManager::getInstance()->saveVegeInfos(msg);
+                break;
+            case  NOTIFY_BUYER_INFO:
+                cout << "NOTIFY_BUYER_INFO" << endl;
+                DataManager::getInstance()->saveBuyerInfos(msg);
+                break;
+            case NOTIFY_SEARCH_INFO:
+                cout << "NOTIFY_SEARCH_INFO" << endl;
+                break;
+        }
+        free(msg);
+    }
+
 }
 
 
-char *SocketClient::RecvFromServer()
+void SocketClient::PushToSendQueue(char *msg)
 {
-    memset(buffer, 0, BUF_SIZE);
-    recv(hSock, buffer, BUF_SIZE, 0);//读取第一个字符！获取消息的长度
-    return buffer;
+    Lock();
+    sendQueue.push(msg);
+    UnLock();
 }
+
 
 void SocketClient::CloseSock()
 {
@@ -161,4 +142,15 @@ void ErrorHandling(char * msg)
     fputs(msg, stderr);
     fputc('\n', stderr);
     exit(1);
+}
+
+
+void SocketClient::Lock()
+{
+    EnterCriticalSection(&locker);
+}
+
+void SocketClient::UnLock()
+{
+    LeaveCriticalSection(&locker);
 }

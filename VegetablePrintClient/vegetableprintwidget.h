@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "common.h"
+#include <QStandardItemModel>
 
 namespace Ui {
 class VegetablePrintWidget;
@@ -18,6 +19,8 @@ public:
 
 private:
     Ui::VegetablePrintWidget *ui;
+
+    QStandardItemModel *model;
 
 private:
     void InitUI();
@@ -42,6 +45,8 @@ public slots:
     void ClickPrintBtn();
 
     void PrintPreviewSlot(QPrinter *);
+
+    void ChangeTheValueAndTotalPrice(QModelIndex,QModelIndex,QVector<int>);
 };
 
 #endif // VEGETABLEPRINTWIDGET_H

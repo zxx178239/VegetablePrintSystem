@@ -2,6 +2,7 @@
 #include "ui_vegetableprintwidget.h"
 
 
+
 VegetablePrintWidget::VegetablePrintWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::VegetablePrintWidget)
@@ -49,22 +50,39 @@ void VegetablePrintWidget::InitVegeNameBtns()
 
 void VegetablePrintWidget::InitTableViewForPrint()
 {
-    ui->tableWidget->setColumnCount(TABLEVIEWHEAD_COUNT);
-    //ui->tableWidget->horizontalHeader()->set
 
     QStringList header;
     for(int i = 0; i < TABLEVIEWHEAD_COUNT; ++ i)
     {
         header << tr(TABLEVIEWHEAD[i].c_str());
-        ui->tableWidget->horizontalHeader()->resizeSection(i,110);
     }
+    model = new QStandardItemModel();
+    model->setHorizontalHeaderLabels(header);
+
+    model->setColumnCount(TABLEVIEWHEAD_COUNT);
+    ui->tableView->setModel(model);
+
+    // 表头设置最后一列数据填充整个控件
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
+
+    // 必须指定menupolicy，才可以实现右击弹出菜单的需要
+    ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->tableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(ShowDeleteMenu(QPoint)));
+
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(ChangeTheValueAndTotalPrice(QModelIndex,QModelIndex,QVector<int>)));
+    /*
+    ui->tableWidget->setColumnCount(TABLEVIEWHEAD_COUNT);
+    //ui->tableWidget->horizontalHeader()->set
+
+
     ui->tableWidget->setHorizontalHeaderLabels(header);
 
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(ShowDeleteMenu(QPoint)));
-
+    */
 }
 
 void VegetablePrintWidget::InitBtns()
@@ -92,6 +110,7 @@ void VegetablePrintWidget::ClickVegeBtn()
 {
     //QMessageBox::information(this, "test widget", "hello");
     // 点击之后在listview中添加一行内容，作为当前买家的一个购买记录，该记录是可以删除的。
+    /*
     int row_count = ui->tableWidget->rowCount();
     cout << "cur row: " << row_count << endl;
     ui->tableWidget->insertRow(row_count);
@@ -110,14 +129,25 @@ void VegetablePrintWidget::ClickVegeBtn()
 
     // 每增加一行记录，则修改总量
     ui->numberLabel->setText(QString::number(ui->tableWidget->rowCount()));
+    */
+
+    QString firstColumName(QObject::sender()->objectName());
+    double vegePrice = DataManager::getInstance()->getVegePriceThroughName(string(firstColumName.toLocal8Bit()));
+
+    QList<QStandardItem *> lists;
+    lists.append(new QStandardItem(firstColumName));
+    lists.append(new QStandardItem(QString::number(vegePrice, 10, 2)));
+
+    model->appendRow(lists);
+    ui->numberLabel->setText(QString::number(model->rowCount()));
 }
 
 void VegetablePrintWidget::ShowDeleteMenu(const QPoint pos)
 {
     cout << "Show Delete Menu" << endl;
-    QMenu *menu = new QMenu(ui->tableWidget);
-    QAction *pDelete = new QAction("删除",ui->tableWidget);
-    connect (pDelete, SIGNAL(triggered()), this, SLOT(ClickDelete()));
+    QMenu *menu = new QMenu(ui->tableView);
+    QAction *pDelete = new QAction("删除",ui->tableView);
+
 
     menu->addAction(pDelete);
 
@@ -126,23 +156,25 @@ void VegetablePrintWidget::ShowDeleteMenu(const QPoint pos)
     //获得鼠标点击的x，y坐标点
     int x = pos.x();
     int y = pos.y();
-    QModelIndex index = ui->tableWidget->indexAt(QPoint(x,y));
+    QModelIndex index = ui->tableView->indexAt(QPoint(x,y));
     int row = index.row ();//获得QTableWidget列表点击的行数
+
+    connect (pDelete, SIGNAL(triggered(bool)), this, SLOT(ClickDelete()));
 }
 
 void VegetablePrintWidget::ClickDelete()
 {
     //QMessageBox::information(this, "delete test", "delete");
     cout << "Click  Delete" << endl;
-    int currentSelectedRow = ui->tableWidget->currentRow();
-    if(currentSelectedRow != -1)
+    int curRow = ui->tableView->currentIndex().row();
+
+    if(curRow != -1)
     {
-        ui->tableWidget->removeRow(currentSelectedRow);
+        model->removeRow(curRow);
+        //ui->tableView->removeRow(currentSelectedRow);
         // 每删除一行记录，也要修改总量
-        ui->numberLabel->setText(QString::number(ui->tableWidget->rowCount()));
+        ui->numberLabel->setText(QString::number(model->rowCount()));
     }
-
-
 
 }
 
@@ -195,3 +227,22 @@ void VegetablePrintWidget::PrintPreviewSlot(QPrinter *printerPixmap)
     painterPixmap.drawPixmap(0, 0, pixmap);
     painterPixmap.end();
 }
+
+void VegetablePrintWidget::ChangeTheValueAndTotalPrice(QModelIndex x,QModelIndex y ,QVector<int> m)
+{
+    double price = model->data(model->index(x.row(), 1)).toString().toDouble();
+    double weight = model->data(model->index(x.row(), 2)).toString().toDouble();
+
+    double money = price * weight;
+    //cout << money << endl;
+    if(model->data(model->index(x.row(), 3)).toString().isEmpty())
+        model->setItem(x.row(), 3, new QStandardItem(QString::number(money, 10, 2)));
+    else
+    {
+        double curValue = model->data(model->index(x.row(), 3)).toString().toDouble();
+
+        if (fabs(curValue - money) > 0.00001)
+            model->setItem(x.row(), 3, new QStandardItem(QString::number(money, 10, 2)));
+    }
+}
+

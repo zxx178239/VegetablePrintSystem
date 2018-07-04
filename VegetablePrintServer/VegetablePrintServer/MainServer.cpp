@@ -89,8 +89,14 @@ void MainServer::Initialize()
 	}
 }
 
-void MainServer::Send(SOCKET clientSock, string &msg)
+void MainServer::Send(SOCKET clientSock, int msgID, string &msg)
 {
+	char strMsgID[10] = "";
+	sprintf(strMsgID, "%d", msgID);
+	string s(&strMsgID[0], &strMsgID[strlen(strMsgID)]);
+	msg = s + " " + msg;
+
+
 	IO_DATA *ioInfo = new IO_DATA;
 	memset(&ioInfo->overlapped, 0, sizeof(ioInfo->overlapped));
 	ioInfo->wsaBuf.buf = const_cast<char *>(msg.c_str());
@@ -122,7 +128,7 @@ void MainServer::SendToClientForVegeInfo(SOCKET clientSock)
 	cout << "select vege info success!" << endl;
 
 	// 2. 将数据发送给客户端
-	Send(clientSock, vegeInfo);
+	Send(clientSock, NOTIFY_VEGETABLEINFO, vegeInfo);
 }
 
 void MainServer::SendToClientForBuyerInfo(SOCKET clientSock)
@@ -137,7 +143,7 @@ void MainServer::SendToClientForBuyerInfo(SOCKET clientSock)
 	cout << "select buyer info success!" << endl;
 
 	// 2. 将数据发送给客户端
-	Send(clientSock, buyerInfo);
+	Send(clientSock, NOTIFY_BUYER_INFO, buyerInfo);
 }
 
 void MainServer::SendToClientForSearchInfo(SOCKET clientSock, int searchIndex, string searchKeyWords)
@@ -152,7 +158,7 @@ void MainServer::SendToClientForSearchInfo(SOCKET clientSock, int searchIndex, s
 	cout << "select search info success!" << endl;
 	cout << searchInfo << endl;
 	// 2. 将数据发送给客户端
-	Send(clientSock, searchInfo);
+	Send(clientSock, NOTIFY_SEARCH_INFO, searchInfo);
 }
 
 unsigned int WINAPI EchoThreadMain(LPVOID lpParameter)//线程的执行  
@@ -160,7 +166,6 @@ unsigned int WINAPI EchoThreadMain(LPVOID lpParameter)//线程的执行
 	MainServer *lpServer = (MainServer *)lpParameter;
 
 	HANDLE hComPort = lpServer->hComPort;
-	SOCKET sock;
 	DWORD bytesTrans;
 	LP_IO_DATA ioInfo;
 	DWORD nBytes;

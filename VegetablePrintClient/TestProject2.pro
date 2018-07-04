@@ -32,7 +32,8 @@ SOURCES += \
     vegetableprintwidget.cpp \
     searchwidget.cpp \
     datamanager.cpp \
-    socketclient.cpp
+    socketclient.cpp \
+    utility.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -41,7 +42,8 @@ HEADERS += \
     common.h \
     datamanager.h \
     socketclient.h \
-    messagedefine.h
+    messagedefine.h \
+    utility.h
 
 FORMS += \
         mainwindow.ui \

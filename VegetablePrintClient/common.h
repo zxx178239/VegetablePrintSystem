@@ -18,6 +18,7 @@
 #include <QDebug>
 #include "messagedefine.h"
 #include "datamanager.h"
+#include "utility.h"
 
 using namespace std;
 

@@ -3,9 +3,12 @@
 
 #include <windows.h>
 #include <process.h>
+#include <queue>
 #include "common.h"
 
 #define NAME_SIZE 20
+
+using namespace std;
 
 //#pragma comment(lib, "ws2_32.lib")
 
@@ -20,17 +23,30 @@ public:
     void Initialize();
 
 
-    void SendToServer(void *msg);
+    void PushToSendQueue(char *msg);
 
     char *RecvFromServer();
 
     void CloseSock();
 
-private:
+    void OnRequest(void *lpData);
+
+    void Lock();
+
+    void UnLock();
+
+public:
 
     SOCKET hSock;
 
-    char buffer[BUF_SIZE];
+    std::queue<char *> sendQueue;
+
+    std::queue<char *> recvQueue;
+
+    HANDLE hSndThread;
+    HANDLE hRcvThread;
+
+    CRITICAL_SECTION locker;
 };
 
 #endif // SOCKETCLIENT_H

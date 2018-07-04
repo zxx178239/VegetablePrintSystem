@@ -145,7 +145,6 @@ void SearchWidget::SearchThroughName(char *buf)
     string searchName = string(ui->nameComboBox->currentText().toLocal8Bit());
     string searchNamePhonetic = DataManager::getInstance()->getBuyerPhoneticThroughName(searchName.c_str());
     sprintf(buf, "%d,%d,%s", REQUEST_SEARCH, radioIndex, searchNamePhonetic.c_str());
-    //sockClient.SendToServer((void *)tmpBuf);
 }
 
 void SearchWidget::SearchThroughDate(char *buf)
@@ -153,14 +152,10 @@ void SearchWidget::SearchThroughDate(char *buf)
     string dateTime = string(ui->dateEdit->date().toString("yyyy-MM-dd").toLocal8Bit());
 
     sprintf(buf, "%d,%d,%s", REQUEST_SEARCH, radioIndex, dateTime.c_str());
-    //sockClient.SendToServer((void *)tmpBuf);
-
 }
 
 
 void SearchWidget::SendSearchSentenceToServer(char *str)
 {
-    sockClient.SendToServer((void *)str);
-
-    char *buf = sockClient.RecvFromServer();
+    sockClient.PushToSendQueue(str);
 }
